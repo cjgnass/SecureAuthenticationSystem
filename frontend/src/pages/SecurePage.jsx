@@ -1,10 +1,23 @@
 import { SERVER_URL } from "../config";
 import { useEffect, useState } from "react";
 import { useAuth } from "../components/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 export default function SecurePage() {
-  const { accessToken, refresh } = useAuth();
+  const { accessToken, refresh, logout } = useAuth();
   const [secureData, setSecureData] = useState(null);
+  const navigate = useNavigate();
+
+
+  async function handleLogout(e) { 
+    e.preventDefault();
+    try { 
+      await logout();
+      navigate("/login");
+    } catch (err) { 
+      console.error(err);
+    }
+  }
 
   useEffect(() => {
     async function fetchData() {
@@ -31,6 +44,7 @@ export default function SecurePage() {
   return (
     <div>
       <h1>Secure Page</h1>
+      <button onClick={handleLogout}>Logout</button>
       <p>{secureData}</p>
     </div>
   );

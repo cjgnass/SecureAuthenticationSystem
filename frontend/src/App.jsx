@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from "./components/AuthProvider";
 import LoginPage from "./pages/LoginPage";
 import SecurePage from "./pages/SecurePage";
 
+
 function SecureRoute({ children }) {
   const { accessToken, isInitializing } = useAuth();
   if (isInitializing) return <div>Loading...</div>;
