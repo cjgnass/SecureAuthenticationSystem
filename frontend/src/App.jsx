@@ -9,7 +9,8 @@ import LoginPage from "./pages/LoginPage";
 import SecurePage from "./pages/SecurePage";
 
 function SecureRoute({ children }) {
-  const { accessToken } = useAuth();
+  const { accessToken, isInitializing } = useAuth();
+  if (isInitializing) return <div>Loading...</div>;
   return accessToken ? children : <Navigate to="/login" replace />;
 }
 

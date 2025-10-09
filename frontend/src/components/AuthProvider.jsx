@@ -1,11 +1,25 @@
 import { SERVER_URL } from "../config";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [accessToken, setAccessToken] = useState(null);
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    (async () => { 
+      try {
+        await refresh();
+      } catch (err) { 
+        console.error(err);
+      } 
+      if (isMounted) setIsInitializing(false);
+    })();
+    return () => { isMounted = false; };
+  }, [])
 
   async function login(credentials) {
     const res = await axios.post(SERVER_URL + "/login", credentials, {
@@ -29,7 +43,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ accessToken, login, refresh, logout }}>
+    <AuthContext.Provider value={{ accessToken, login, refresh, logout, isInitializing }}>
       {children}
     </AuthContext.Provider>
   );
