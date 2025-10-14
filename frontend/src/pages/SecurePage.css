@@ -1,0 +1,53 @@
+.secure-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  padding: 20px;
+}
+
+.secure-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.secure-header {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.secure-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.logout-button {
+  padding: 12px;
+  background: #4a90e2;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+}
+
+.logout-button:hover {
+  background: #357ab8;
+}
+
+@media (max-width: 480px) {
+  .secure-card {
+    padding: 30px 20px;
+  }
+}
+
