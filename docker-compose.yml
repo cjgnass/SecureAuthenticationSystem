@@ -18,9 +18,31 @@ services:
       - CLIENT_URL=http://localhost:5173
       - ACCESS_SECRET=dev-access-secret-change-me
       - REFRESH_SECRET=dev-refresh-secret-change-me
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/app_db
+    depends_on:
+      - postgres
     networks:
       - app-network
     restart: unless-stopped
+  
+  postgres:
+    image: postgres:16
+    container_name: login-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password 
+      - POSTGRES_DB=app_db
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./backend/db/init.sql:/docker-entrypoint-initdb.d/00_init.sql:ro
+      - ./backend/db/seed_dev_user.sql:/docker-entrypoint-initdb.d/10_seed_dev_user.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d app_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
 
   frontend:
     build:
@@ -44,3 +66,6 @@ services:
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  db-data:
