@@ -20,11 +20,7 @@ Start the app by typing:
 docker compose up -d
 ```
 
-Stop the app by typing:
-
-```bash
-docker compose down -v
-```
+Once the application is running you can go to access the webpage: [http://localhost:5173/](http://localhost:5173/)
 
 To add users type:
 
@@ -36,4 +32,10 @@ Example:
 
 ```bash
 docker compose exec backend node scripts/addUser.js admin mysecurepassword
+```
+
+Stop the app by typing:
+
+```bash
+docker compose down -v
 ```
