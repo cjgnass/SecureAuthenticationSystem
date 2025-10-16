@@ -1,6 +1,7 @@
 
 services:
   backend:
+    image: login/backend:dev
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -43,6 +44,7 @@ services:
       - app-network
 
   frontend:
+    image: login/frontend:dev
     build:
       context: ./frontend
       dockerfile: Dockerfile
