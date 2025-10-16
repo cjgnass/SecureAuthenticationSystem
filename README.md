@@ -1,48 +1,72 @@
-Prerequisites :  
-- Docker installed on both machines
-- Docker Desktop is running
+Prerequisites:
+- Docker installed
+- A way to transfer files (USB/external drive)
 
-On the source machine go to the project root (that contains backend/, frontend/, and docker-compose.yml) and run the following commands.
-Build images : 
-```bash 
-docker compose build
-docker compose pull postgres
-docker save -o login_app_images.tar login/backend:dev login/frontend:dev postgres:16```
+Both machines should have compatible CPU/OS (e.g., x86_64 Linux/Windows). If architectures differ, build with the matching target platform using `--platform`.
 
-Transfer the tarball to the target machine.
+## 1) Build images on the target machine
 
-Load images : 
+From the repository root:
+
 ```bash
-docker load -i login_app_images.tar```
+# Build backend image
+docker build -t login/backend:dev ./backend
 
-Create network/volume : 
+# Build frontend image
+docker build -t login/frontend:dev ./frontend
+```
+
+If you need to target a specific platform (e.g., for the offline box):
 ```bash
-docker network create login-net
-docker volume create login-db-data```
+docker build --platform linux/amd64 -t login/backend:dev ./backend
+docker build --platform linux/amd64 -t login/frontend:dev ./frontend
+```
 
-Start Postgres : 
+Pull the database base image so it is available offline:
 ```bash
-docker run -d --name postgres --network login-net -v login-db-data:/var/lib/postgresql/data -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=app_db -p 5432:5432 postgres:16```
+docker pull postgres:16
+```
 
-Start Backend (4000) : 
+## 2) Save images to portable tar files
+
 ```bash
-docker run -d --name login-backend --network login-net -p 4000:4000 -e NODE_ENV=development -e PORT=4000 -e SERVER_URL=http://localhost:4000 -e CLIENT_URL=http://localhost:5173 -e ACCESS_SECRET=dev-
-access-secret-change-me -e REFRESH_SECRET=dev-refresh-secret-change-me -e DATABASE_URL=postgresql://postgres:password@postgres:5432/app_db login/backend:dev```
+docker save -o login-images.tar login/backend:dev login/frontend:dev postgres:16
+```
 
-Start Frontend (5173) :
+## 3) Copy repository to target machine
+
+## 4) Load images on the target machine
+
+From the repository root:
 ```bash
-docker run -d --name login-frontend --network login-net -p 5173:5173 -e NODE_ENV=development -e VITE_API_URL=http://localhost:4000 login/frontend:dev```
+docker load -i login-images.tar
+```
 
-App is running!
+## 5) Run the stack on the target machine
 
-Once the application is running you can go to: [http://localhost:5173/](http://localhost:5173/)
-
-To add users type:
+From the repository root:
 ```bash
+# Start containers in the background
+docker compose up -d
+```
+
+- Backend available at: http://localhost:4000
+- Frontend available at: http://localhost:5173
+
+## 6) Add an initial user 
+
+You can create a user directly in the database or use the provided script inside the backend container:
+
+```bash
+# Replace <username> and <password> with your desired credentials
 docker compose exec backend node scripts/addUser.js <username> <password>
 ```
 
-Example:
+## 7) Stopping and cleaning up
+
 ```bash
-docker compose exec backend node scripts/addUser.js admin mysecurepassword
+docker compose down  # stop containers but keep db volume
+
+docker compose down -v # stop containers and delete db volume
 ```
+
