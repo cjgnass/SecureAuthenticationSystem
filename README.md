@@ -4,7 +4,7 @@ Prerequisites:
 
 Both machines should have compatible CPU/OS (e.g., x86_64 Linux/Windows). If architectures differ, build with the matching target platform using `--platform`.
 
-## 1) Build images on the target machine
+## 1) Build images on source machine
 
 From the repository root:
 
@@ -16,7 +16,7 @@ docker build -t login/backend:dev ./backend
 docker build -t login/frontend:dev ./frontend
 ```
 
-If you need to target a specific platform (e.g., for the offline box):
+If you need to target a specific platform (e.g., for target machine):
 ```bash
 docker build --platform linux/amd64 -t login/backend:dev ./backend
 docker build --platform linux/amd64 -t login/frontend:dev ./frontend
@@ -35,14 +35,14 @@ docker save -o login-images.tar login/backend:dev login/frontend:dev postgres:16
 
 ## 3) Copy repository to target machine
 
-## 4) Load images on the target machine
+## 4) Load images on target machine
 
 From the repository root:
 ```bash
 docker load -i login-images.tar
 ```
 
-## 5) Run the stack on the target machine
+## 5) Run the stack on target machine
 
 From the repository root:
 ```bash
